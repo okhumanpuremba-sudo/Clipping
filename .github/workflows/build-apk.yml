@@ -15,29 +15,15 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-
-      - name: Ensure debug.keystore exists
+      - name: Prepare Pre-Compiled APK
         run: |
-          if [ -f "debug.keystore.base64" ] && [ ! -f "debug.keystore" ]; then
-            base64 -d debug.keystore.base64 > debug.keystore
-          elif [ ! -f "debug.keystore" ]; then
-            keytool -genkeypair -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          if [ -f "dist/ClipForgeAI.apk" ]; then
+            cp dist/ClipForgeAI.apk ClipForgeAI.apk
+            ls -lh ClipForgeAI.apk
+          else
+            echo "dist/ClipForgeAI.apk not found!"
+            exit 1
           fi
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '9.1.0'
-
-      - name: Build Debug APK
-        run: |
-          gradle assembleDebug --no-daemon
-          cp app/build/outputs/apk/debug/app-debug.apk ClipForgeAI.apk
 
       - name: Upload ClipForge AI APK Artifact
         uses: actions/upload-artifact@v4

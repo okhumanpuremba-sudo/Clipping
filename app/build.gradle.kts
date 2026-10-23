@@ -151,3 +151,11 @@ tasks.withType<Test> {
     events("passed", "failed", "skipped")
   }
 }
+
+tasks.register<Copy>("copyDebugApkToDist") {
+  dependsOn("assembleDebug")
+  from(layout.buildDirectory.file("outputs/apk/debug/app-debug.apk"))
+  into(layout.projectDirectory.dir("../dist"))
+  rename { "ClipForgeAI.apk" }
+}
+
